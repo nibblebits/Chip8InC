@@ -1,6 +1,12 @@
 
 #include "emulator.h"
+#include "simulator.h"
+#include "cmemory.h"
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 SDL_Window *window;
 SDL_Renderer *renderer;
 
@@ -41,7 +47,13 @@ void init_emulator()
     memset(&chip8, 0, sizeof(chip8));
 
     // Let's copy in the sprite set
-    memcpy(&chip8.memory[0x00], default_sprite_set, sizeof(default_sprite_set));
+    memcpy(&chip8.memory[0x00], &default_sprite_set, sizeof(default_sprite_set));
+
+    // Chip8 should start running from 0x200
+
+    chip8_set_PC(&chip8.registers, CHIP8_PROGRAM_LOAD_ADDRESS);
+    
+
 }
 
 void end_emulator()
@@ -95,22 +107,44 @@ void emulator_render()
 
 bool emulator_loop()
 {
+    // Execute the instruction
+    unsigned int lpc = chip8.registers.PC;
+    unsigned short opcode = chip8_read_short(&chip8, chip8.registers.PC);
+    // We must increment the program counter
+    chip8_next_PC(&chip8.registers);
+
+    printf("Executing %x val=%x\n", lpc, opcode);
+    chip8_exec(&chip8, opcode);
+
     if (!emulator_poll_events())
         return false;
 
     emulator_render();
+
     return true;
 }
 
-int emulate()
+
+static void emulator_load_program(char* program, size_t length)
+{
+    memcpy(&chip8.memory[CHIP8_PROGRAM_LOAD_ADDRESS], program, length);
+}
+
+
+
+int emulate(char* program, size_t length)
 {
 
     init_emulator();
-
+    emulator_load_program(program, length);
     while (1)
     {
         if (!emulator_loop())
             break;
+
+        // We will sleep here for now but in future use the system time to do this more efficient
+        // Some sleep will be neccessary however to avoid overloading CPU
+        usleep(20000);
     }
 
 out:

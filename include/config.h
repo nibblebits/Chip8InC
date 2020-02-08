@@ -8,6 +8,11 @@
 #define CHIP8_TOTAL_REGISTERS 16
 #define CHIP8_STACK_SIZE 16
 #define CHIP8_CLOCK_RATE_MS 16
+#define CHIP8_TOTAL_KEYS 16
+#define CHIP8_DEFAULT_CHARACTER_SET_BYTES_PER_CHARACTER 5
+#define CHIP8_PROGRAM_LOAD_ADDRESS 0x200
+
+
 /* Window modifer should be equal to how much larger you want the display to be than chip8 display size.
 * Currently set at 10 times larger, pixels will scale based on this value
 */

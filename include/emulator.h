@@ -5,12 +5,14 @@
 #include <stdbool.h>
 #include "screen.h"
 #include "registers.h"
+#include "keyboard.h"
 #include "config.h"
 
 struct chip8
 {
     struct chip8_screen screen;
     struct chip8_registers registers;
+    struct chip8_keyboard keyboard;
     char memory[CHIP8_MEMORY_SIZE];
 
     // Holds return addresses for subroutine calls

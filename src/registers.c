@@ -8,7 +8,7 @@ void chip8_set_general_register(struct chip8_registers* registers, int reg, char
 }
 
 
-char chip8_get_general_register(struct chip8_registers* registers, int reg)
+unsigned char chip8_get_general_register(struct chip8_registers* registers, int reg)
 {
     // Out of bounds!
     if (reg >= CHIP8_TOTAL_REGISTERS)
@@ -34,6 +34,11 @@ void chip8_set_I(struct chip8_registers* registers, unsigned short val)
 void chip8_set_PC(struct chip8_registers* registers, unsigned short val)
 {
     registers->PC = val;
+}
+
+void chip8_next_PC(struct chip8_registers* registers)
+{
+    registers->PC+=2;
 }
 
 void chip8_set_SP(struct chip8_registers* registers, unsigned short val)
