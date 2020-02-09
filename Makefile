@@ -1,5 +1,5 @@
 INCLUDES = -I ./include -I /usr/include
-OBJECT_FILES = ./build/emulator.o ./build/screen.o ./build/registers.o ./build/simulator.o ./build/keyboard.o ./build/cmemory.o
+OBJECT_FILES = ./build/emulator.o ./build/test.o ./build/screen.o ./build/registers.o ./build/simulator.o ./build/keyboard.o ./build/cmemory.o
 FLAGS = -g
 all: ${OBJECT_FILES}
 	gcc ${INCLUDES} ${OBJECT_FILES} main.c -o main -lSDL2main -lSDL2_image -lSDL2
@@ -23,6 +23,10 @@ all: ${OBJECT_FILES}
 
 ./build/cmemory.o: ./src/cmemory.c
 	gcc ${FLAGS} -c ${INCLUDES} ./src/cmemory.c -o ./build/cmemory.o
+
+
+./build/test.o: ./src/test.c
+	gcc ${FLAGS} -c ${INCLUDES} ./src/test.c -o ./build/test.o
 
 clean:
 	rm ${OBJECT_FILES}

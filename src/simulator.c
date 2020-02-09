@@ -4,7 +4,10 @@
 #include <memory.h>
 #include <time.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
 
+bool stop_exec = false;
 static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
 {
     unsigned char kk = 0;
@@ -21,6 +24,7 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
     unsigned short opcode_1st = opcode & 0xf000;
     unsigned short opcode_2nd = opcode & 0x000f;
     unsigned short prefix_opcode = opcode & 0x00ff;
+    bool opcode_found = true;
     switch (opcode_1st)
     {
     // 1nnn JP Addr, sets the interpreters PC to final three bytes of opcode
@@ -150,6 +154,9 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
             val = reg_x_val * 2;
             chip8_set_general_register(&chip8->registers, x, val);
             break;
+
+        default:
+            opcode_found = false;
         }
         break;
 
@@ -199,8 +206,12 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
         n = opcode & 0x000f;
         reg_x_val = chip8_get_general_register(&chip8->registers, x);
         reg_y_val = chip8_get_general_register(&chip8->registers, y);
+
         bool sprite_hit = chip8_draw_sprite(chip8, reg_x_val, reg_y_val, chip8->registers.I, n);
         chip8_set_general_register(&chip8->registers, 0x0f, sprite_hit);
+
+        if (chip8->registers.I == 10)
+            stop_exec = true;
     }
     break;
 
@@ -225,12 +236,16 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
                 chip8_next_PC(&chip8->registers);
             }
             break;
+
+        default:
+            opcode_found = false;
         }
     }
     break;
 
     // Fxnn
     case 0xF000:
+    {
         x = (opcode >> 8) & 0x000f;
         reg_x_val = chip8_get_general_register(&chip8->registers, x);
         switch (prefix_opcode)
@@ -283,7 +298,7 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
 
         //Fx55 - LD [I], Vx, Store registers V0 through Vx in memory starting at location I., The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
         case 0x0055:
-            for (int i = 0; i < reg_x_val; i++)
+            for (int i = 0; i < x; i++)
             {
 #warning Change memory access to use a function to ensure we are in bounds! important!!
                 tmp = chip8_get_general_register(&chip8->registers, i);
@@ -294,19 +309,28 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
 
         //Fx65 - LD Vx, [I], Read registers V0 through Vx from memory starting at location I., The interpreter reads values from memory starting at location I into registers V0 through Vx.
         case 0x0065:
-            for (int i = 0; i < reg_x_val; i++)
+            for (int i = 0; i < x; i++)
             {
                 chip8_set_general_register(&chip8->registers, i, chip8->memory[chip8->registers.I + i]);
             }
             break;
-        }
 
-        break;
+        default:
+            opcode_found = false;
+        }
     }
+    break;
+
+    default:
+        opcode_found = false;
+    }
+
+    assert(opcode_found);
 }
 
 void chip8_exec(struct chip8 *chip8, unsigned short opcode)
 {
+
 
     switch (opcode)
     {

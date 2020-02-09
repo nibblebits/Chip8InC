@@ -10,7 +10,7 @@ struct chip8_screen
 };
 
 void chip8_clear_screen(struct chip8_screen* screen);
-bool chip8_set_pixel(struct chip8_screen* screen, int x, int y);
+bool chip8_set_pixel(struct chip8_screen* screen, int x, int y, bool on);
 bool chip8_clear_pixel(struct chip8_screen* screen, int x, int y);
 bool chip8_is_pixel_set(struct chip8_screen *screen, int x, int y);
 

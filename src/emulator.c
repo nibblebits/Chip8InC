@@ -50,7 +50,6 @@ char handle_key_press_event(SDL_Event *event)
     return chip8_keyboard_code;
 }
 
-
 char handle_key_event(SDL_Event *event)
 {
     switch (event->type)
@@ -86,7 +85,7 @@ char wait_for_key_press()
     while (SDL_WaitEvent(&event))
     {
         key = handle_key_press_event(&event);
-        if(key != -1)
+        if (key != -1)
         {
             return key;
         }
@@ -150,8 +149,6 @@ void emulator_render()
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
 
-
-
     SDL_Rect rpixel;
     rpixel.w = WINDOW_PIXEL_MODIFIER;
     rpixel.h = WINDOW_PIXEL_MODIFIER;
@@ -160,6 +157,7 @@ void emulator_render()
     {
         for (int y = 0; y < CHIP8_DISPLAY_HEIGHT; y++)
         {
+
             if (!chip8_is_pixel_set(&chip8.screen, x, y))
                 continue;
 
@@ -178,15 +176,14 @@ bool emulator_loop()
     // Delays can happen
     if (chip8.registers.delay_timer > 0)
     {
-        chip8_set_delay_timer(&chip8.registers, chip8.registers.delay_timer-1);
+        chip8_set_delay_timer(&chip8.registers, chip8.registers.delay_timer - 1);
         return true;
     }
-    
 
     if (chip8.registers.sound_timer > 0)
     {
-        chip8_set_sound_timer(&chip8.registers, chip8.registers.sound_timer-1);
-        printf("BING!\n");
+        chip8_set_sound_timer(&chip8.registers, chip8.registers.sound_timer - 1);
+        //  printf("BING!\n");
     }
 
     // Execute the instruction
@@ -194,7 +191,7 @@ bool emulator_loop()
     unsigned short opcode = chip8_read_short(&chip8, chip8.registers.PC);
 
     // We must increment the program counter
-    chip8_next_PC(&chip8.registers);
+   chip8_next_PC(&chip8.registers);
 
     printf("Executing %x val=%x\n", lpc, opcode);
     chip8_exec(&chip8, opcode);
@@ -203,8 +200,6 @@ bool emulator_loop()
         return false;
 
     emulator_render();
-
-
 
     return true;
 }
@@ -226,7 +221,7 @@ int emulate(char *program, size_t length)
 
         // We will sleep here for now but in future use the system time to do this more efficient
         // Some sleep will be neccessary however to avoid overloading CPU
-        usleep(20000);
+        usleep(2000);
     }
 
 out:

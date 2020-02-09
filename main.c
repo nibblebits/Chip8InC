@@ -1,7 +1,14 @@
 #include "emulator.h"
+#include "test.h"
 #include <stdio.h>
 #include <stdlib.h>
 
+void test_mode()
+{
+    printf("Running test mode, running tests\n");
+    test_chip8();
+    printf("Tests passed\n");
+}
 int main(int argc, char *args[])
 {
     if (argc < 2)
@@ -11,6 +18,12 @@ int main(int argc, char *args[])
     }
 
     char *filename = args[1];
+    if (strcmp(filename, "test") == 0)
+    {
+        test_mode();
+        return 0;
+    }
+
     printf("Will emulate %s\n", filename);
 
     FILE *f = fopen(filename, "r");

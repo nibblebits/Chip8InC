@@ -6,9 +6,9 @@
 
 struct chip8_registers
 {
-    char reg[CHIP8_TOTAL_REGISTERS];
-    char delay_timer;
-    char sound_timer;
+    unsigned char reg[CHIP8_TOTAL_REGISTERS];
+    unsigned char delay_timer;
+    unsigned char sound_timer;
     unsigned short I;
     unsigned short PC;
     unsigned char SP;
