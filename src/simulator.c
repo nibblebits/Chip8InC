@@ -30,9 +30,10 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
 
     // 2nnn CALL Addr, calls the subroutine specified by the address in nnn final three bytes of the opcode
     case 0x2000:
-        chip8_set_PC(&chip8->registers, opcode & 0x0fff);
         chip8_set_SP(&chip8->registers, chip8->registers.SP + 1);
         chip8->stack[chip8->registers.SP] = chip8->registers.PC;
+        chip8_set_PC(&chip8->registers, opcode & 0x0fff);
+
         break;
 
     // 3xkk - SE Vx, byte, compares the register vX to kk and if they are equal skips next instruction. PC+=2
@@ -198,10 +199,9 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
         n = opcode & 0x000f;
         reg_x_val = chip8_get_general_register(&chip8->registers, x);
         reg_y_val = chip8_get_general_register(&chip8->registers, y);
-        bool sprite_hit =chip8_draw_sprite(chip8, reg_x_val, reg_y_val, chip8->registers.I, n);
+        bool sprite_hit = chip8_draw_sprite(chip8, reg_x_val, reg_y_val, chip8->registers.I, n);
         chip8_set_general_register(&chip8->registers, 0x0f, sprite_hit);
     }
-
     break;
 
     // Exnn
@@ -242,8 +242,12 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
 
         //Fx0A - LD Vx, K, Wait for a key press, store the value of the key in Vx.
         case 0x000A:
-#warning Implement this later
-            break;
+        {
+            // Call the function pointer to wait for a key press event
+            char key = chip8->wait_for_key_ptr();
+            chip8_set_general_register(&chip8->registers, x, key);
+        }
+        break;
 
         //Fx15 - LD DT, Vx, Set delay timer = Vx., DT is set equal to the value of Vx.
         case 0x0015:
@@ -307,14 +311,15 @@ void chip8_exec(struct chip8 *chip8, unsigned short opcode)
     switch (opcode)
     {
     // CLS, Clear the display
-    case 0x00e0:
+    case 0x00E0:
         chip8_clear_screen(&chip8->screen);
         break;
 
     // Ret, return from subroutine
-    case 0x00ee:
+    case 0x00EE:
         chip8_set_PC(&chip8->registers, chip8->stack[chip8->registers.SP]);
         chip8_set_SP(&chip8->registers, chip8->registers.SP - 1);
+
         break;
 
     default:

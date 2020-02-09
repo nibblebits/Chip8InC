@@ -27,3 +27,17 @@ bool chip8_is_key_down(struct chip8_keyboard *keyboard, int key)
 
     return keyboard->keys[key];
 }
+
+char chip8_get_key_from_map(const char* map, char key_value)
+{
+    for (int i = 0; i < CHIP8_TOTAL_KEYS; i++)
+    {
+        if (map[i] == key_value)
+        {
+            return i;
+        }
+    }
+
+    // No valid key
+    return -1;
+}

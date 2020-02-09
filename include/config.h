@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define DEBUG_MODE 1
 
 #define CHIP8_DISPLAY_WIDTH 64
 #define CHIP8_DISPLAY_HEIGHT 32
