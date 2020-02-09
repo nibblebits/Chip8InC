@@ -51,11 +51,26 @@ bool chip8_draw_sprite(struct chip8 *chip8, int x, int y, int sloc, int n)
         int v = c;
         for (int lx = 0; lx < 8; lx++)
         {
-            int real_x_offset = x + lx;
-            int real_y_offset = y + ly;
+        
             if (!((c << lx) & 0b10000000))
                 continue;
 
+            int real_x_offset = x + lx;
+            int real_y_offset = y + ly;
+        
+            if (!in_screen_bounds(real_x_offset, real_y_offset))
+            {
+                // We not in screen bounds we must wrap around
+                if (real_x_offset >= CHIP8_DISPLAY_WIDTH)
+                {
+                    real_x_offset -= CHIP8_DISPLAY_WIDTH;
+                }
+
+                if (real_y_offset >= CHIP8_DISPLAY_HEIGHT)
+                {
+                    real_y_offset -= CHIP8_DISPLAY_HEIGHT;
+                }
+            }
 
             /*
              * We must return true if a pixel collison has been detected as required by the chip8 specification

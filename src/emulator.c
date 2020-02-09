@@ -117,6 +117,7 @@ void init_emulator()
     chip8_set_PC(&chip8.registers, CHIP8_PROGRAM_LOAD_ADDRESS);
 
     chip8.wait_for_key_ptr = wait_for_key_press;
+
 }
 
 void end_emulator()
