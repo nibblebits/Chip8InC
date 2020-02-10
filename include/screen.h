@@ -6,7 +6,7 @@
 struct chip8;
 struct chip8_screen
 {
-    bool pixels[CHIP8_DISPLAY_WIDTH * CHIP8_DISPLAY_HEIGHT];
+    bool pixels[CHIP8_DISPLAY_HEIGHT][CHIP8_DISPLAY_WIDTH];
 };
 
 void chip8_clear_screen(struct chip8_screen* screen);

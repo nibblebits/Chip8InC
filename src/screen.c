@@ -18,18 +18,7 @@ bool chip8_set_pixel(struct chip8_screen *screen, int x, int y, bool on)
     if (!in_screen_bounds(x, y))
         return false;
 
-    int index = x + (y * CHIP8_DISPLAY_WIDTH);
-    screen->pixels[index] = on;
-    return true;
-}
-
-bool chip8_clear_pixel(struct chip8_screen *screen, int x, int y)
-{
-    if (!in_screen_bounds(x, y))
-        return false;
-
-    int index = x + (y * CHIP8_DISPLAY_WIDTH);
-    screen->pixels[index] = false;
+    screen->pixels[y][x] = on;
     return true;
 }
 
@@ -38,61 +27,33 @@ bool chip8_is_pixel_set(struct chip8_screen *screen, int x, int y)
     if (!in_screen_bounds(x, y))
         return false;
 
-    int index = x + (y * CHIP8_DISPLAY_WIDTH);
-    return screen->pixels[index];
+    return screen->pixels[y][x];
 }
 
 bool chip8_draw_sprite(struct chip8 *chip8, int x, int y, int sloc, int n)
 {
 
-    #warning SOMETHING IS WRONG WITH THE DRAWING ROUTINE, REGARDING KEEPING TRACK OF HIT COUNTERS FOR PONG
-
+#warning SOMETHING IS WRONG WITH THE DRAWING ROUTINE, REGARDING KEEPING TRACK OF HIT COUNTERS FOR PONG
 
     bool pixel_hit = false;
 
     for (int ly = 0; ly < n; ly++)
     {
         char c = chip8->memory[sloc + ly];
-        int v = c;
         for (int lx = 0; lx < 8; lx++)
         {
-            if (!(c & (0x80 >> lx)))
-                continue;
-         
-
-            int real_x_offset = x + lx;
-            int real_y_offset = y + ly;
-            bool should_set_pixel = ((c << lx) & 0b10000000);
-
-            if (!in_screen_bounds(real_x_offset, real_y_offset))
+            if ((c & (0x80 >> lx)) != 0)
             {
-                // We not in screen bounds we must wrap around
-                if (real_x_offset >= CHIP8_DISPLAY_WIDTH)
+
+                if (chip8->screen.pixels[(y + ly) % CHIP8_DISPLAY_HEIGHT][(x + lx) % CHIP8_DISPLAY_WIDTH])
                 {
-                    real_x_offset -= CHIP8_DISPLAY_WIDTH;
+                    pixel_hit = true;
                 }
 
-                if (real_y_offset >= CHIP8_DISPLAY_HEIGHT)
-                {
-                    real_y_offset -= CHIP8_DISPLAY_HEIGHT;
-                }
+                chip8->screen.pixels[(y + ly) % CHIP8_DISPLAY_HEIGHT][(x + lx) % CHIP8_DISPLAY_WIDTH] ^= true;
             }
-
-
-                 /*
-             * We must return true if a pixel collison has been detected as required by the chip8 specification
-             */
-            bool pixel_already_set = chip8_is_pixel_set(&chip8->screen, real_x_offset, real_y_offset);
-            if (pixel_already_set)
-            {
-                pixel_hit = true;
-            }
-           
-            chip8_set_pixel(&chip8->screen, real_x_offset, real_y_offset, should_set_pixel ^ pixel_already_set);
-            
         }
     }
-
 
     return pixel_hit;
 }

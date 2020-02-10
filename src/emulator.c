@@ -221,7 +221,7 @@ int emulate(char *program, size_t length)
 
         // We will sleep here for now but in future use the system time to do this more efficient
         // Some sleep will be neccessary however to avoid overloading CPU
-        usleep(2000);
+        usleep(20000);
     }
 
 out:

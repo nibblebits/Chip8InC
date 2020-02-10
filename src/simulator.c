@@ -210,8 +210,6 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
         bool sprite_hit = chip8_draw_sprite(chip8, reg_x_val, reg_y_val, chip8->registers.I, n);
         chip8_set_general_register(&chip8->registers, 0x0f, sprite_hit);
 
-        if (chip8->registers.I == 10)
-            stop_exec = true;
     }
     break;
 
@@ -298,7 +296,7 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
 
         //Fx55 - LD [I], Vx, Store registers V0 through Vx in memory starting at location I., The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
         case 0x0055:
-            for (int i = 0; i < x; i++)
+            for (int i = 0; i <= x; i++)
             {
 #warning Change memory access to use a function to ensure we are in bounds! important!!
                 tmp = chip8_get_general_register(&chip8->registers, i);
@@ -309,7 +307,7 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
 
         //Fx65 - LD Vx, [I], Read registers V0 through Vx from memory starting at location I., The interpreter reads values from memory starting at location I into registers V0 through Vx.
         case 0x0065:
-            for (int i = 0; i < x; i++)
+            for (int i = 0; i <= x; i++)
             {
                 chip8_set_general_register(&chip8->registers, i, chip8->memory[chip8->registers.I + i]);
             }
