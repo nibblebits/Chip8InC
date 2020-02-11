@@ -2,3 +2,4 @@
 *.so
 main
 chip8/debian
+.vscode
