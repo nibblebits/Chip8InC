@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "sdl.h": "c",
-        "emulator.h": "c",
-        "stdio.h": "c",
-        "cstdio": "c"
-    }
-}
