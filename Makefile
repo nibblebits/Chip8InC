@@ -1,4 +1,4 @@
-INCLUDES = -I ./include -I /usr/include
+INCLUDES = -I ./include -I /usr/include -I ./chip8/include
 OBJECT_FILES =  ./build/emulator.o ./build/test.o 
 FLAGS = -g
 all: ${OBJECT_FILES}

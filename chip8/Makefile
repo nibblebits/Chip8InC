@@ -24,4 +24,4 @@ all: ${OBJECT_FILES}
 ./build/cmemory.o: ./src/cmemory.c
 	gcc ${FLAGS} -c ${INCLUDES} ./src/cmemory.c -o ./build/cmemory.o
 clean:
-	rm ${OBJECT_FILES}
+	rm -rf ${OBJECT_FILES}
