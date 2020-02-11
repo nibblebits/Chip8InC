@@ -1,6 +1,5 @@
 #include "simulator.h"
-#include "emulator.h"
-#include "registers.h"
+#include "chip8.h"
 #include <memory.h>
 #include <time.h>
 #include <stdlib.h>
@@ -138,7 +137,8 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
         case 0x0006:
             vf = reg_x_val & 0b00000001;
             val = reg_x_val / 2;
-            chip8_set_general_register(&chip8->registers, 0x0f, val);
+            chip8_set_general_register(&chip8->registers, x, val);
+            chip8_set_general_register(&chip8->registers, 0x0f, vf);
             break;
 
         //8xy7 - SUBN Vx, Vy, Set Vx = Vy - Vx, set VF = NOT borrow.
@@ -146,6 +146,7 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
             vf = reg_y_val > reg_x_val;
             val = reg_y_val - reg_x_val;
             chip8_set_general_register(&chip8->registers, x, val);
+            chip8_set_general_register(&chip8->registers, 0x0f, vf);
             break;
 
         // 8xyE - SHL Vx {, Vy} Set Vx = Vx SHL 1.,  If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
@@ -153,6 +154,7 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
             vf = reg_x_val & 0b10000000;
             val = reg_x_val * 2;
             chip8_set_general_register(&chip8->registers, x, val);
+            chip8_set_general_register(&chip8->registers, 0x0f, vf);
             break;
 
         default:
@@ -257,7 +259,7 @@ static void chip8_exec_extended(struct chip8 *chip8, unsigned short opcode)
         case 0x000A:
         {
             // Call the function pointer to wait for a key press event
-            char key = chip8->wait_for_key_ptr();
+            char key = chip8->wait_for_key();
             chip8_set_general_register(&chip8->registers, x, key);
         }
         break;

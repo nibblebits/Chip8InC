@@ -33,6 +33,7 @@ int main(int argc, char *args[])
         return -1;
     }
 
+
     // Let's read the data into the buffer
     fseek(f, 0, SEEK_END);
     size_t len = ftell(f);
@@ -45,7 +46,13 @@ int main(int argc, char *args[])
         return -1;
     }
 
-    int res = emulate(&buf, len);
+    int clock_rate =CHIP8_DEFAULT_CLOCK_RATE;
+    if (argc > 2)
+    {
+        clock_rate = atoi(args[2]);
+    }
+    
+    int res = emulate(&buf, len, clock_rate);
     fclose(f);
     return res;
 }

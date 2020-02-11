@@ -1,5 +1,5 @@
 #include "cmemory.h"
-#include "emulator.h"
+#include "chip8.h"
 #include <stdbool.h>
 
 static bool chip8_is_memory_out_of_bounds(unsigned short addr)

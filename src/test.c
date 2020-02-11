@@ -10,7 +10,7 @@
 #include <assert.h>
 
 // This is the default sprite set that represents sprites in the CHIP8, seek manual for more information
-const char test_default_sprite_set[] = {
+const char test_chip8_default_sprite_set[] = {
     0xff, 0xff, 0xff, 0xff, 0xff,
     0x20, 0x60, 0x20, 0x20, 0x70,
     0xf0, 0x10, 0xf0, 0x80, 0xf0,
@@ -40,11 +40,11 @@ static void test_chip8_init()
     memset(&chip8, 0, sizeof(chip8));
 
     // Let's copy in the sprite set
-    memcpy(&chip8.memory[0x00], &test_default_sprite_set, sizeof(test_default_sprite_set));
+    memcpy(&chip8.memory[0x00], &test_chip8_default_sprite_set, sizeof(test_chip8_default_sprite_set));
 
     // Chip8 should start running from 0x200
     chip8_set_PC(&chip8.registers, CHIP8_PROGRAM_LOAD_ADDRESS);
-    chip8.wait_for_key_ptr = &fake_key_press;
+    chip8.wait_for_key = &fake_key_press;
 }
 
 void test_chip8_test_clear_screen()
@@ -258,7 +258,7 @@ void test_chip8_draw_sprite()
 
     chip8_exec(&chip8, 0xd005);
 
-    // Character we set has all pixels set, just for this test. Not part of real chip8 character set. Seek test_default_sprite_set
+    // Character we set has all pixels set, just for this test. Not part of real chip8 character set. Seek test_chip8_default_sprite_set
     for (int y = 0; y < 5; y++)
     {
         for (int x = 0; x < 8; x++)
@@ -378,13 +378,13 @@ void test_chip8_test_BCD()
 void test_chip8_test_store_registers()
 {
     chip8_set_I(&chip8.registers, 0x210);
-    for (int i = 0; i < 0x0f; i++)
+    for (int i = 0; i <= 0x0f; i++)
     {
         chip8_set_general_register(&chip8.registers, i, i);
     }
 
     chip8_exec(&chip8, 0xff55);
-    for (int i = 0; i < 0x0f; i++)
+    for (int i = 0; i <= 0x0f; i++)
     {
         assert(chip8.memory[chip8.registers.I+i] == i);
     }
@@ -394,13 +394,13 @@ void test_chip8_test_store_registers()
 void test_chip8_test_read_registers()
 {
     chip8_set_I(&chip8.registers, 0x210);
-    memset(&chip8.memory[chip8.registers.I], 0xff, 0x0f);
+    memset(&chip8.memory[chip8.registers.I], 0xbb, 0x0f);
 
 
     chip8_exec(&chip8, 0xff65);
     for (int i = 0; i < 0x0f; i++)
     {
-        assert(chip8_get_general_register(&chip8.registers, i) == 0xff);
+        assert(chip8_get_general_register(&chip8.registers, i) == 0xbb);
     }
 
 }
@@ -446,6 +446,8 @@ void test_chip8_test()
     test_chip8_test_BCD();
     test_chip8_test_store_registers();
     test_chip8_test_read_registers();
+
+
 }
 
 void test_chip8()

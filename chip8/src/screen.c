@@ -1,5 +1,5 @@
 #include "screen.h"
-#include "emulator.h"
+#include "chip8.h"
 #include <stdio.h>
 #include <memory.h>
 
@@ -33,8 +33,6 @@ bool chip8_is_pixel_set(struct chip8_screen *screen, int x, int y)
 bool chip8_draw_sprite(struct chip8 *chip8, int x, int y, int sloc, int n)
 {
 
-#warning SOMETHING IS WRONG WITH THE DRAWING ROUTINE, REGARDING KEEPING TRACK OF HIT COUNTERS FOR PONG
-
     bool pixel_hit = false;
 
     for (int ly = 0; ly < n; ly++)
@@ -42,16 +40,15 @@ bool chip8_draw_sprite(struct chip8 *chip8, int x, int y, int sloc, int n)
         char c = chip8->memory[sloc + ly];
         for (int lx = 0; lx < 8; lx++)
         {
-            if ((c & (0x80 >> lx)) != 0)
+            if ((c & (0x80 >> lx)) == 0)
+                continue;
+
+            if (chip8->screen.pixels[(y + ly) % CHIP8_DISPLAY_HEIGHT][(x + lx) % CHIP8_DISPLAY_WIDTH])
             {
-
-                if (chip8->screen.pixels[(y + ly) % CHIP8_DISPLAY_HEIGHT][(x + lx) % CHIP8_DISPLAY_WIDTH])
-                {
-                    pixel_hit = true;
-                }
-
-                chip8->screen.pixels[(y + ly) % CHIP8_DISPLAY_HEIGHT][(x + lx) % CHIP8_DISPLAY_WIDTH] ^= true;
+                pixel_hit = true;
             }
+
+            chip8->screen.pixels[(y + ly) % CHIP8_DISPLAY_HEIGHT][(x + lx) % CHIP8_DISPLAY_WIDTH] ^= true;
         }
     }
 
